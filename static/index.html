@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toodete Haldamine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #toodeteList {
+            margin-top: 20px;
+        }
+        .toode-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Toodete Haldamine</h1>
+    
+    <div class="container">
+        <!-- Lisa uus toode -->
+        <div class="section">
+            <h2>Lisa uus toode</h2>
+            <form id="lisaToodeForm">
+                <div class="form-group">
+                    <label for="nimi">Nimi:</label>
+                    <input type="text" id="nimi" required>
+                </div>
+                <div class="form-group">
+                    <label for="hind">Hind:</label>
+                    <input type="number" id="hind" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="kategooria">Kategooria:</label>
+                    <input type="text" id="kategooria" required>
+                </div>
+                <button type="submit">Lisa toode</button>
+            </form>
+        </div>
+
+        <!-- Muuda toodet -->
+        <div class="section">
+            <h2>Muuda toodet</h2>
+            <form id="muudaToodeForm">
+                <div class="form-group">
+                    <label for="muudaId">Toote ID:</label>
+                    <input type="number" id="muudaId" required>
+                </div>
+                <div class="form-group">
+                    <label for="muudaNimi">Uus nimi:</label>
+                    <input type="text" id="muudaNimi">
+                </div>
+                <div class="form-group">
+                    <label for="muudaHind">Uus hind:</label>
+                    <input type="number" id="muudaHind" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="muudaKategooria">Uus kategooria:</label>
+                    <input type="text" id="muudaKategooria">
+                </div>
+                <button type="submit">Muuda toode</button>
+            </form>
+        </div>
+
+        <!-- Kustuta toode -->
+        <div class="section">
+            <h2>Kustuta toode</h2>
+            <form id="kustutaToodeForm">
+                <div class="form-group">
+                    <label for="kustutaId">Toote ID:</label>
+                    <input type="number" id="kustutaId" required>
+                </div>
+                <button type="submit">Kustuta toode</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toodete nimekiri -->
+    <div class="section" style="margin-top: 20px;">
+        <h2>Toodete nimekiri</h2>
+        <button onclick="laeTooted()">Värskenda nimekirja</button>
+        <div id="toodeteList"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        // Lisa uus toode
+        document.getElementById('lisaToodeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const toode = {
+                nimi: document.getElementById('nimi').value,
+                hind: parseFloat(document.getElementById('hind').value),
+                kategooria: document.getElementById('kategooria').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/tooted`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(toode)
+                });
+                
+                if (response.ok) {
+                    alert('Toode edukalt lisatud!');
+                    e.target.reset();
+                    laeTooted();
+                } else {
+                    alert('Viga toote lisamisel!');
+                }
+            } catch (error) {
+                console.error('Viga:', error);
+                alert('Viga toote lisamisel!');
+            }
+        });
+
+        // Muuda toodet
+        document.getElementById('muudaToodeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('muudaId').value;
+            const toode = {};
+
+            const nimi = document.getElementById('muudaNimi').value;
+            const hind = document.getElementById('muudaHind').value;
+            const kategooria = document.getElementById('muudaKategooria').value;
+
+            if (nimi) toode.nimi = nimi;
+            if (hind) toode.hind = parseFloat(hind);
+            if (kategooria) toode.kategooria = kategooria;
+
+            try {
+                const response = await fetch(`${API_URL}/tooted/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(toode)
+                });
+                
+                if (response.ok) {
+                    alert('Toode edukalt muudetud!');
+                    e.target.reset();
+                    laeTooted();
+                } else {
+                    alert('Viga toote muutmisel!');
+                }
+            } catch (error) {
+                console.error('Viga:', error);
+                alert('Viga toote muutmisel!');
+            }
+        });
+
+        // Kustuta toode
+        document.getElementById('kustutaToodeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('kustutaId').value;
+
+            try {
+                const response = await fetch(`${API_URL}/tooted/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('Toode edukalt kustutatud!');
+                    e.target.reset();
+                    laeTooted();
+                } else {
+                    alert('Viga toote kustutamisel!');
+                }
+            } catch (error) {
+                console.error('Viga:', error);
+                alert('Viga toote kustutamisel!');
+            }
+        });
+
+        // Lae tooted
+        async function laeTooted() {
+            try {
+                const response = await fetch(`${API_URL}/tooted`);
+                const tooted = await response.json();
+                
+                const toodeteList = document.getElementById('toodeteList');
+                toodeteList.innerHTML = '';
+                
+                tooted.forEach(toode => {
+                    const toodeElement = document.createElement('div');
+                    toodeElement.className = 'toode-item';
+                    toodeElement.innerHTML = `
+                        <strong>ID:</strong> ${toode.toode_id}<br>
+                        <strong>Nimi:</strong> ${toode.nimi}<br>
+                        <strong>Hind:</strong> ${toode.hind}€<br>
+                        <strong>Kategooria:</strong> ${toode.kategooria}
+                    `;
+                    toodeteList.appendChild(toodeElement);
+                });
+            } catch (error) {
+                console.error('Viga:', error);
+                alert('Viga toodete laadimisel!');
+            }
+        }
+
+        // Lae tooted kohe lehe avamisel
+        laeTooted();
+    </script>
+</body>
+</html> 

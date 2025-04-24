@@ -1,12 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from os import environ
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
+CORS(app)  # Enable CORS for all routes
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = (
@@ -32,6 +34,11 @@ class Toode(db.Model):
             'hind': self.hind,
             'kategooria': self.kategooria
         }
+
+# Serve static files
+@app.route('/')
+def serve_index():
+    return send_from_directory('static', 'index.html')
 
 # GET - Kõik tooted
 @app.route('/api/tooted', methods=['GET'])
