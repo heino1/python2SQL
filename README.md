@@ -24,8 +24,8 @@ API toetab järgmisi toiminguid:
 
 1. Klooni repositoorium:
 ```bash
-git clone [repository URL]
-cd [repository name]
+git clone https://github.com/heino1/python2SQL.git
+cd python2SQL/
 ```
 
 2. Muuda nano abil .env faili: 
