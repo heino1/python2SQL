@@ -33,32 +33,18 @@ API toetab järgmisi toiminguid:
 
 1. Python 3.9 või uuem
 2. MySQL andmebaas
-3. Docker (valikuline)
+3. Docker 
 
 ## Paigaldamine
 
-### Lokaalne paigaldus
 
 1. Klooni repositoorium:
 ```bash
-git clone [repository URL]
-cd [repository name]
+git clone https://github.com/heino1/python2SQL.git
+cd python2SQL
 ```
 
-2. Loo virtuaalne keskkond:
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# või
-venv\Scripts\activate     # Windows
-```
-
-3. Installi sõltuvused:
-```bash
-pip install -r requirements.txt
-```
-
-4. Loo .env fail järgmise sisuga:
+2. Paranda .env fail oma andmetega vastavusse:
 ```
 MYSQL_HOST=your_mysql_host
 MYSQL_USER=your_username
@@ -66,19 +52,12 @@ MYSQL_PASSWORD=your_password
 MYSQL_DATABASE=logistika_labor
 ```
 
-5. Käivita rakendus:
-```bash
-python app.py
-```
-
-### Docker paigaldus
-
-1. Ehita Docker image:
+3. Ehita Docker image:
 ```bash
 docker build -t mysql-api .
 ```
 
-2. Käivita konteiner:
+4. Käivita konteiner:
 ```bash
 docker run -d -p 5000:5000 --env-file .env mysql-api
 ```
@@ -87,7 +66,7 @@ docker run -d -p 5000:5000 --env-file .env mysql-api
 
 ### Veebiliides
 
-1. Ava brauser aadressil `http://localhost:5000`
+1. Ava brauser aadressil `http://AWS_NGINX_IP:5000`
 2. Veebiliideses saad:
    - Näha kõiki tooteid
    - Lisada uusi tooteid
@@ -95,7 +74,7 @@ docker run -d -p 5000:5000 --env-file .env mysql-api
    - Kustutada tooteid
    - Värskendada toodete nimekirja
 
-### API kasutamise näited
+### edasijõudnud võivad proovida jõudu curl'i ja API-ga
 
 1. Kõik tooted:
 ```bash
@@ -133,39 +112,6 @@ Tabel `toode`:
 - `nimi` (VARCHAR(255)) - Toote nimetus
 - `hind` (FLOAT) - Toote hind
 - `kategooria` (VARCHAR(255)) - Toote kategooria
-
-## Arendamine
-
-1. Klooni repositoorium
-2. Loo oma arendusbranch:
-```bash
-git checkout -b feature/uus-funktsioon
-```
-3. Tee muudatused
-4. Testi muudatusi
-5. Saada pull request
-
-## Võimalikud probleemid ja lahendused
-
-1. **Andmebaasi ühenduse viga**
-   - Kontrolli .env faili seadistusi
-   - Veendu, et MySQL server töötab
-   - Kontrolli võrguühendust
-
-2. **CORS vead**
-   - Veendu, et päringud tulevad lubatud domeenilt
-   - Kontrolli, kas Flask-CORS on õigesti seadistatud
-
-3. **Docker probleemid**
-   - Veendu, et Docker daemon töötab
-   - Kontrolli pordi kättesaadavust
-
-## Turvalisus
-
-- Ära jaga .env faili
-- Kasuta HTTPS-i toodangukeskkonnas
-- Valideeri kõik sisendandmed
-- Kasuta parameetriseeritud päringuid SQL-süstimise vältimiseks
 
 ## Litsents
 
